@@ -6,11 +6,11 @@ package examen1;
 
 
 public abstract class RentItem {
-    private String codigo;
-    private String nombre;
-    private double precioBase;
-    private int copias;
-    private String imagen;
+    protected String codigo;
+    protected String nombre;
+    protected double precioBase;
+    protected int copias;
+    protected String imagen;
 
     public RentItem(String codigo, String nombre, double precioBase, String imagen) {
         this.codigo = codigo;
