@@ -6,35 +6,42 @@ package examen1;
 
 
 import java.util.Calendar;
-import java.util.Date;
 
 public class Movie extends RentItem {
-    private Date fechaEstreno;
+    private Calendar fechaEstreno;
 
-    public Movie(String codigo, String nombre, double precioBase, String imagen) {
+    public Movie(String codigo, String nombre, double precioBase, String imagen, Calendar fecha) {
         super(codigo, nombre, precioBase, imagen);
-        this.fechaEstreno = Calendar.getInstance().getTime();
+        fechaEstreno = fecha;
     }
 
-    public Date getFechaEstreno() {
+    public Calendar getFechaEstreno() {
         return fechaEstreno;
     }
 
-    public void setFechaEstreno(Date fechaEstreno) {
+    public void setFechaEstreno(Calendar fechaEstreno) {
         this.fechaEstreno = fechaEstreno;
     }
 
     public String getEstado() {
-        Date hoy = Calendar.getInstance().getTime();
-        long diferencia = hoy.getTime() - fechaEstreno.getTime();
-        long dias = diferencia / (1000 * 60 * 60 * 24);
-        long meses = dias / 30;
-        if (meses <= 3) {
-            return "ESTRENO";
-        } else {
-            return "NORMAL";
-        }
+    Calendar hoy = Calendar.getInstance();
+
+    int anioHoy = hoy.get(Calendar.YEAR);
+    int mesHoy = hoy.get(Calendar.MONTH);
+    int diaHoy = hoy.get(Calendar.DAY_OF_MONTH);
+
+    int anioEstreno = fechaEstreno.get(Calendar.YEAR);
+    int mesEstreno = fechaEstreno.get(Calendar.MONTH);
+    int diaEstreno = fechaEstreno.get(Calendar.DAY_OF_MONTH);
+
+    int diferenciaMeses = (anioHoy - anioEstreno) * 12 + (mesHoy - mesEstreno);
+
+    if (diferenciaMeses < 3 || (diferenciaMeses == 3 && diaHoy - diaEstreno <= 0)) {
+        return "ESTRENO";
+    } else {
+        return "NORMAL";
     }
+}
 
     @Override
     public String toString() {

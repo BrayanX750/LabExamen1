@@ -4,11 +4,14 @@
  */
 package examen1;
 
+import com.toedter.calendar.JDateChooser;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class SistemaMain {
@@ -79,22 +82,21 @@ public class SistemaMain {
     private void agregarItem() {
         String[] opciones = {"Movie", "Game"};
         String tipo = (String) JOptionPane.showInputDialog(
-                ventana, "¿Qué desea agregar?", "Agregar",
+                ventana, "¿Que desea agregar?", "Agregar",
                 JOptionPane.QUESTION_MESSAGE, null, opciones, opciones[0]);
         if (tipo == null) return;
 
         String codigo = null;
-
         while (true) {
-            codigo = JOptionPane.showInputDialog(ventana, "Código:");
+            codigo = JOptionPane.showInputDialog(ventana, "Codigo:");
             if (codigo == null) return;
             codigo = codigo.trim();
             if (codigo.isEmpty()) {
-                JOptionPane.showMessageDialog(ventana, "Código vacío. Intente otro.");
+                JOptionPane.showMessageDialog(ventana, "Codigo vacio. Intente otro.");
                 continue;
             }
             if (buscarPorCodigo(codigo) != null) {
-                JOptionPane.showMessageDialog(ventana, "Código repetido. Intente otro.");
+                JOptionPane.showMessageDialog(ventana, "Codigo repetido. Intente otro.");
                 continue;
             }
             break;
@@ -106,18 +108,18 @@ public class SistemaMain {
         double precio = 0.0;
         if (tipo.equals("Movie")) {
             while (true) {
-                String p = JOptionPane.showInputDialog(ventana, "Precio base por día:");
+                String p = JOptionPane.showInputDialog(ventana, "Precio base por dia:");
                 if (p == null) return;
                 p = p.trim();
                 if (p.isEmpty()) {
-                    JOptionPane.showMessageDialog(ventana, "Precio vacío. Intente de nuevo.");
+                    JOptionPane.showMessageDialog(ventana, "Precio vacio. Intente de nuevo.");
                     continue;
                 }
                 try {
                     precio = Double.parseDouble(p);
                     break;
                 } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(ventana, "Precio inválido. Ingrese un número.");
+                    JOptionPane.showMessageDialog(ventana, "Precio invalido. Ingrese un numero.");
                 }
             }
         } else {
@@ -128,12 +130,33 @@ public class SistemaMain {
         if (rutaImagen == null) return;
 
         if (tipo.equals("Movie")) {
-            Movie m = new Movie(codigo, nombre, precio, rutaImagen);
+            JDateChooser dateChooser = new JDateChooser();
+            dateChooser.setDateFormatString("dd/MM/yyyy");
+            int opcion = JOptionPane.showConfirmDialog(
+                    ventana, dateChooser, "Seleccione fecha de estreno",
+                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+            if (opcion != JOptionPane.OK_OPTION) return;
+
+            Calendar fechaEstreno = Calendar.getInstance();
+            fechaEstreno.setTime(dateChooser.getDate());
+
+            Movie m = new Movie(codigo, nombre, precio, rutaImagen, fechaEstreno);
             m.setImagen(rutaImagen);
             items.add(m);
             JOptionPane.showMessageDialog(ventana, "Movie guardada.");
         } else {
-            Game g = new Game(codigo, nombre, precio, rutaImagen);
+            JDateChooser dateChooser = new JDateChooser();
+            dateChooser.setDateFormatString("dd/MM/yyyy");
+            int opcion = JOptionPane.showConfirmDialog(
+                    ventana, dateChooser, "Seleccione fecha de publicacion",
+                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+            if (opcion != JOptionPane.OK_OPTION) return;
+
+            Calendar fechaEstreno = Calendar.getInstance();
+            fechaEstreno.setTime(dateChooser.getDate());
+            
+            
+            Game g = new Game(codigo, nombre, precio, rutaImagen, fechaEstreno);
             g.setImagen(rutaImagen);
             items.add(g);
             JOptionPane.showMessageDialog(ventana, "Game guardado.");
@@ -141,15 +164,15 @@ public class SistemaMain {
     }
 
     private void rentarItem() {
-        String codigo = JOptionPane.showInputDialog(ventana, "Código del item:");
+        String codigo = JOptionPane.showInputDialog(ventana, "Codigo del item:");
         if (codigo == null || codigo.trim().isEmpty()) {
-            JOptionPane.showMessageDialog(ventana, "Código inválido.");
+            JOptionPane.showMessageDialog(ventana, "Codigo invalido.");
             return;
         }
 
         RentItem it = buscarPorCodigo(codigo);
         if (it == null) {
-            JOptionPane.showMessageDialog(ventana, "Item No Existe");
+            JOptionPane.showMessageDialog(ventana, "Item no existe");
             return;
         }
 
@@ -166,18 +189,18 @@ public class SistemaMain {
         panel.add(info, BorderLayout.CENTER);
 
         JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        inputPanel.add(new JLabel("Días de renta:"));
+        inputPanel.add(new JLabel("Dias de renta:"));
         JTextField txtDias = new JTextField(5);
         inputPanel.add(txtDias);
         panel.add(inputPanel, BorderLayout.SOUTH);
 
         int result = JOptionPane.showConfirmDialog(
-                ventana, panel, "Rentar Ítem", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+                ventana, panel, "Rentar Item", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
         if (result == JOptionPane.OK_OPTION) {
             String d = txtDias.getText().trim();
             if (d.isEmpty()) {
-                JOptionPane.showMessageDialog(ventana, "Debe ingresar los días de renta.");
+                JOptionPane.showMessageDialog(ventana, "Debe ingresar los dias de renta.");
                 return;
             }
 
@@ -185,21 +208,21 @@ public class SistemaMain {
             try {
                 dias = Integer.parseInt(d);
             } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(ventana, "Ingrese un número válido.");
+                JOptionPane.showMessageDialog(ventana, "Ingrese un numero valido.");
                 return;
             }
 
             double total = it.pagoRenta(dias);
 
             JOptionPane.showMessageDialog(ventana,
-                    "Total renta por " + dias + " día(s): " + total,
+                    "Total renta por " + dias + " dia(s): " + total,
                     "Renta confirmada",
                     JOptionPane.INFORMATION_MESSAGE);
         }
     }
 
     private void ejecutarSubmenu() {
-        String codigo = JOptionPane.showInputDialog(ventana, "Codigo del ítem:");
+        String codigo = JOptionPane.showInputDialog(ventana, "Codigo del item:");
         if (codigo == null || codigo.trim().isEmpty()) return;
         RentItem it = buscarPorCodigo(codigo);
         if (it == null) {
@@ -213,7 +236,7 @@ public class SistemaMain {
                 JOptionPane.showMessageDialog(ventana, "No se pudo abrir el submenu.");
             }
         } else {
-            JOptionPane.showMessageDialog(ventana, "Este ítem no tiene submenu.");
+            JOptionPane.showMessageDialog(ventana, "Este item no tiene submenu.");
         }
     }
 
@@ -226,45 +249,57 @@ public class SistemaMain {
         cont.setLayout(new GridLayout(0, 3, 10, 10));
         cont.setBorder(new EmptyBorder(10, 10, 10, 10));
 
-        for (RentItem it : items) {
+        if (items.isEmpty()) {
             JPanel card = new JPanel();
-            card.setLayout(new BorderLayout(5, 5));
+            card.setLayout(new BorderLayout(5,5));
             card.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
 
-            ImageIcon icon = cargarIcono(it.getImagen(), 160, 220);
-            JLabel lblImg = new JLabel(icon);
-            lblImg.setHorizontalAlignment(SwingConstants.CENTER);
+            JLabel mensaje = new JLabel("No hay items registrados", SwingConstants.CENTER);
+            mensaje.setFont(new Font("Arial", Font.BOLD, 18));
+            card.add(mensaje, BorderLayout.CENTER);
 
-            String nombre = it.getNombre();
-            String precio = "Precio por dia: " + it.getPrecioBase();
-            String l3 = "";
-            String l4 = "";
-
-            if (it instanceof Movie) {
-                Movie m = (Movie) it;
-                l3 = "Estado: " + m.getEstado();
-                l4 = "Movie";
-            } else if (it instanceof Game) {
-                Game g = (Game) it;
-                l3 = "Fecha pub: " + g.getFechaPublicacionTexto();
-                l4 = "PS3 Game";
-            }
-
-            JPanel texto = new JPanel();
-            texto.setLayout(new BoxLayout(texto, BoxLayout.Y_AXIS));
-            JLabel a = new JLabel(nombre);
-            JLabel b = new JLabel(precio);
-            JLabel c = new JLabel(l3);
-            JLabel d = new JLabel(l4);
-            a.setFont(a.getFont().deriveFont(Font.BOLD));
-            texto.add(a);
-            texto.add(b);
-            if (!l3.isEmpty()) texto.add(c);
-            if (!l4.isEmpty()) texto.add(d);
-
-            card.add(lblImg, BorderLayout.CENTER);
-            card.add(texto, BorderLayout.SOUTH);
             cont.add(card);
+        } else {
+            for (RentItem it : items) {
+                JPanel card = new JPanel();
+                card.setLayout(new BorderLayout(5, 5));
+                card.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
+
+                ImageIcon icon = cargarIcono(it.getImagen(), 160, 220);
+                JLabel lblImg = new JLabel(icon);
+                lblImg.setHorizontalAlignment(SwingConstants.CENTER);
+
+                String nombre = it.getNombre();
+                String precio = "Precio por dia: " + it.getPrecioBase();
+                String l3 = "";
+                String l4 = "";
+
+                if (it instanceof Movie) {
+                    Movie m = (Movie) it;
+                    l3 = "Estado: " + m.getEstado();
+                    l4 = "Movie";
+                } else if (it instanceof Game) {
+                    Game g = (Game) it;
+                    l3 = "Fecha pub: " + g.getFechaPublicacionTexto();
+                    l4 = "PS3 Game";
+                }
+
+                JPanel texto = new JPanel();
+                texto.setLayout(new BoxLayout(texto, BoxLayout.Y_AXIS));
+                JLabel a = new JLabel(nombre);
+                JLabel b = new JLabel(precio);
+                JLabel c = new JLabel(l3);
+                JLabel d = new JLabel(l4);
+                a.setFont(a.getFont().deriveFont(Font.BOLD));
+                texto.add(a);
+                texto.add(b);
+                if (!l3.isEmpty()) texto.add(c);
+                if (!l4.isEmpty()) texto.add(d);
+
+                card.add(lblImg, BorderLayout.CENTER);
+                card.add(texto, BorderLayout.SOUTH);
+                cont.add(card);
+            }
         }
 
         JScrollPane scroll = new JScrollPane(cont);
@@ -283,7 +318,7 @@ public class SistemaMain {
         JFileChooser ch = new JFileChooser();
 
         FileNameExtensionFilter filter = new FileNameExtensionFilter(
-                "Imágenes (JPG, PNG)", "jpg", "jpeg", "png");
+                "Imagenes (JPG, PNG)", "jpg", "jpeg", "png");
         ch.setFileFilter(filter);
 
         int r = ch.showOpenDialog(ventana);

@@ -12,9 +12,9 @@ public class Game extends RentItem implements MenuActions {
     Calendar fechaPub;
     ArrayList<String> specs;
 
-    public Game(String code, String name, Double price, String img) {
+    public Game(String code, String name, Double price, String img, Calendar fecha) {
         super(code, name, price, img);
-        fechaPub = Calendar.getInstance();
+        fechaPub = fecha;
         specs = new ArrayList<>();
     }
 
@@ -67,7 +67,7 @@ public class Game extends RentItem implements MenuActions {
                 opcion = Integer.parseInt(JOptionPane.showInputDialog(null, menu, "Submenu", JOptionPane.QUESTION_MESSAGE));
                 ejecutarOpcion(opcion);
             } catch (Exception e) {
-                JOptionPane.showMessageDialog(null, "Ingrese un número valido.");
+                JOptionPane.showMessageDialog(null, "Ingrese un numero valido.");
                 opcion = 0;
             }
         } while (opcion != 4);
@@ -77,12 +77,34 @@ public class Game extends RentItem implements MenuActions {
     public void ejecutarOpcion(int opcion) {
         switch (opcion) {
             case 1 -> {
-                int anio = Integer.parseInt(JOptionPane.showInputDialog("Año:"));
-                int mes = Integer.parseInt(JOptionPane.showInputDialog("Mes (1-12):"));
-                int dia = Integer.parseInt(JOptionPane.showInputDialog("Día:"));
-                setFechaPublicacion(anio, mes, dia);
-                JOptionPane.showMessageDialog(null, "Fecha actualizada: " + fechaComoTexto());
+                try {
+                    com.toedter.calendar.JDateChooser dateChooser = new com.toedter.calendar.JDateChooser();
+                    dateChooser.setDateFormatString("dd/MM/yyyy");
+
+                    int result = JOptionPane.showConfirmDialog(null, dateChooser, 
+                            "Seleccione fecha de publicacion", JOptionPane.OK_CANCEL_OPTION, 
+                            JOptionPane.PLAIN_MESSAGE);
+
+                    if (result == JOptionPane.OK_OPTION) {
+                        java.util.Date fecha = dateChooser.getDate();
+                        if (fecha != null) {
+                            java.util.Calendar cal = java.util.Calendar.getInstance();
+                            cal.setTime(fecha);
+
+                            setFechaPublicacion(cal.get(Calendar.YEAR),
+                                                cal.get(Calendar.MONTH) + 1,
+                                                cal.get(Calendar.DAY_OF_MONTH));
+
+                            JOptionPane.showMessageDialog(null, "Fecha actualizada: " + fechaComoTexto());
+                        } else {
+                            JOptionPane.showMessageDialog(null, "No se selecciono ninguna fecha.");
+                        }
+                    }
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "Error al abrir el selector de fecha.");
+                }
             }
+
             case 2 -> {
                 String espec = JOptionPane.showInputDialog("Especificacion:");
                 if (espec != null && !espec.trim().isEmpty()) {
