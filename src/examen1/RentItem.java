@@ -17,7 +17,7 @@ public abstract class RentItem {
         this.nombre = nombre;
         this.precioBase = precioBase;
         this.copias = 0;
-        this.imagen = "";
+        this.imagen = imagen;
     }
 
     public String getCodigo() {
