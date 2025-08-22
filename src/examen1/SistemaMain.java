@@ -9,6 +9,7 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.io.File;
 import java.util.ArrayList;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class SistemaMain {
     private JFrame ventana;
@@ -16,92 +17,186 @@ public class SistemaMain {
 
     public SistemaMain() {
         items = new ArrayList<>();
-        ventana = new JFrame("Rentas de Items");
+        ventana = new JFrame("Videoclub");
         ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        ventana.setSize(500, 380);
+        ventana.setSize(600, 450);
         ventana.setLocationRelativeTo(null);
+
+        JPanel panel = new JPanel();
+        panel.setBackground(Color.WHITE);
+        panel.setLayout(new BorderLayout());
+
+        JLabel titulo = new JLabel("Videoclub", SwingConstants.CENTER);
+        titulo.setFont(new Font("Arial", Font.BOLD, 32));
+        titulo.setForeground(Color.BLACK);
+        titulo.setBorder(new EmptyBorder(20, 0, 20, 0));
+        panel.add(titulo, BorderLayout.NORTH);
+
+        JPanel botones = new JPanel(new GridLayout(4, 1, 15, 15));
+        botones.setBackground(Color.WHITE);
+        botones.setBorder(new EmptyBorder(20, 50, 20, 50));
 
         JButton btnAgregar = new JButton("Agregar Item");
         JButton btnRentar = new JButton("Rentar");
         JButton btnSubmenu = new JButton("Ejecutar Submenu");
         JButton btnImprimir = new JButton("Imprimir Todo");
+        JButton btnSalir = new JButton("Salir");
+
+        JButton[] botonesArray = {btnAgregar, btnRentar, btnSubmenu, btnImprimir};
+        for (JButton b : botonesArray) {
+            b.setBackground(Color.BLACK);
+            b.setForeground(Color.WHITE);
+            b.setFont(new Font("Arial", Font.BOLD, 16));
+            b.setFocusPainted(false);
+            botones.add(b);
+        }
+
+        JPanel salirPanel = new JPanel();
+        salirPanel.setBackground(Color.WHITE);
+        btnSalir.setBackground(Color.BLACK);
+        btnSalir.setForeground(Color.WHITE);
+        btnSalir.setFont(new Font("Arial", Font.BOLD, 16));
+        btnSalir.setFocusPainted(false);
+        salirPanel.add(btnSalir);
 
         btnAgregar.addActionListener(e -> agregarItem());
         btnRentar.addActionListener(e -> rentarItem());
         btnSubmenu.addActionListener(e -> ejecutarSubmenu());
         btnImprimir.addActionListener(e -> imprimirTodo());
+        btnSalir.addActionListener(e -> System.exit(0));
 
-        JPanel panel = new JPanel(new GridLayout(4, 1, 10, 10));
-        panel.setBorder(new EmptyBorder(20, 20, 20, 20));
-        panel.add(btnAgregar);
-        panel.add(btnRentar);
-        panel.add(btnSubmenu);
-        panel.add(btnImprimir);
+        JPanel panelBotones = new JPanel(new BorderLayout());
+        panelBotones.setBackground(Color.WHITE);
+        panelBotones.add(botones, BorderLayout.CENTER);
+        panelBotones.add(salirPanel, BorderLayout.SOUTH);
+
+        panel.add(panelBotones, BorderLayout.CENTER);
 
         ventana.setContentPane(panel);
         ventana.setVisible(true);
     }
 
     private void agregarItem() {
-        String[] opciones = {"Movie", "Game"};
-        String tipo = (String) JOptionPane.showInputDialog(ventana, "¿Qué desea agregar?", "Agregar",
-                JOptionPane.QUESTION_MESSAGE, null, opciones, opciones[0]);
-        if (tipo == null) return;
+    String[] opciones = {"Movie", "Game"};
+    String tipo = (String) JOptionPane.showInputDialog(
+            ventana, "¿Qué desea agregar?", "Agregar",
+            JOptionPane.QUESTION_MESSAGE, null, opciones, opciones[0]);
+    if (tipo == null) return;
 
-        String codigo = JOptionPane.showInputDialog(ventana, "Codigo:");
-        if (codigo == null || codigo.trim().isEmpty()) return;
+    String codigo = null;
+
+    while (true) {
+        codigo = JOptionPane.showInputDialog(ventana, "Código:");
+        if (codigo == null) return;
+        codigo = codigo.trim();
+        if (codigo.isEmpty()) {
+            JOptionPane.showMessageDialog(ventana, "Código vacío. Intente otro.");
+            continue;
+        }
         if (buscarPorCodigo(codigo) != null) {
-            JOptionPane.showMessageDialog(ventana, "Codigo repetido. Intente otro.");
-            return;
+            JOptionPane.showMessageDialog(ventana, "Código repetido. Intente otro.");
+            continue;
         }
-
-        String nombre = JOptionPane.showInputDialog(ventana, "Nombre:");
-        if (nombre == null || nombre.trim().isEmpty()) return;
-
-        double precio = 0.0;
-        if (tipo.equals("Movie")) {
-            String p = JOptionPane.showInputDialog(ventana, "Precio base por dia:");
-            if (p == null || p.trim().isEmpty()) return;
-            try { precio = Double.parseDouble(p); } catch (Exception ex) { return; }
-        } else {
-            precio = 20.0;
-        }
-
-        String rutaImagen = seleccionarImagen();
-        if (rutaImagen == null) return;
-
-        if (tipo.equals("Movie")) {
-            Movie m = new Movie(codigo, nombre, precio, rutaImagen);
-            m.setImagen(rutaImagen);
-            items.add(m);
-            JOptionPane.showMessageDialog(ventana, "Movie guardada.");
-        } else {
-            Game g = new Game(codigo, nombre, precio, rutaImagen);
-            g.setImagen(rutaImagen);
-            items.add(g);
-            JOptionPane.showMessageDialog(ventana, "Game guardado.");
-        }
+        break;
     }
+
+    String nombre = JOptionPane.showInputDialog(ventana, "Nombre:");
+    if (nombre == null || nombre.trim().isEmpty()) return;
+
+    double precio = 0.0;
+    if (tipo.equals("Movie")) {
+        while (true) {
+            String p = JOptionPane.showInputDialog(ventana, "Precio base por día:");
+            if (p == null) return;
+            p = p.trim();
+            if (p.isEmpty()) {
+                JOptionPane.showMessageDialog(ventana, "Precio vacío. Intente de nuevo.");
+                continue;
+            }
+            try {
+                precio = Double.parseDouble(p);
+                break;
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(ventana, "Precio inválido. Ingrese un número.");
+            }
+        }
+    } else {
+        precio = 20.0;
+    }
+
+    String rutaImagen = seleccionarImagen();
+    if (rutaImagen == null) return;
+
+    if (tipo.equals("Movie")) {
+        Movie m = new Movie(codigo, nombre, precio, rutaImagen);
+        m.setImagen(rutaImagen);
+        items.add(m);
+        JOptionPane.showMessageDialog(ventana, "Movie guardada.");
+    } else {
+        Game g = new Game(codigo, nombre, precio, rutaImagen);
+        g.setImagen(rutaImagen);
+        items.add(g);
+        JOptionPane.showMessageDialog(ventana, "Game guardado.");
+    }
+}
 
     private void rentarItem() {
-        String codigo = JOptionPane.showInputDialog(ventana, "Codigo del item:");
-        if (codigo == null || codigo.trim().isEmpty()) return;
-        RentItem it = buscarPorCodigo(codigo);
-        if (it == null) {
-            JOptionPane.showMessageDialog(ventana, "Item No Existe");
+    String codigo = JOptionPane.showInputDialog(ventana, "Código del item:");
+    if (codigo == null || codigo.trim().isEmpty()) {
+        JOptionPane.showMessageDialog(ventana, "Código inválido.");
+        return;
+    }
+
+    RentItem it = buscarPorCodigo(codigo);
+    if (it == null) {
+        JOptionPane.showMessageDialog(ventana, "Item No Existe");
+        return;
+    }
+
+    
+    JPanel panel = new JPanel(new BorderLayout(10, 10));
+    
+    ImageIcon icon = cargarIcono(it.getImagen(), 120, 160);
+    JLabel lblImagen = new JLabel(icon);
+    panel.add(lblImagen, BorderLayout.WEST);
+
+    JTextArea info = new JTextArea(it.toString());
+    info.setEditable(false);
+    info.setOpaque(false);
+    panel.add(info, BorderLayout.CENTER);
+
+    JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    inputPanel.add(new JLabel("Días de renta:"));
+    JTextField txtDias = new JTextField(5);
+    inputPanel.add(txtDias);
+    panel.add(inputPanel, BorderLayout.SOUTH);
+
+    int result = JOptionPane.showConfirmDialog(
+            ventana, panel, "Rentar Ítem", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+    if (result == JOptionPane.OK_OPTION) {
+        String d = txtDias.getText().trim();
+        if (d.isEmpty()) {
+            JOptionPane.showMessageDialog(ventana, "Debe ingresar los días de renta.");
             return;
         }
-        String d = JOptionPane.showInputDialog(ventana, "Dias de renta:");
-        if (d == null || d.trim().isEmpty()) return;
+
         int dias;
-        try { dias = Integer.parseInt(d); } catch (Exception ex) { return; }
+        try {
+            dias = Integer.parseInt(d);
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(ventana, "Ingrese un número válido.");
+            return;
+        }
+
         double total = it.pagoRenta(dias);
 
-        ImageIcon icon = cargarIcono(it.getImagen(), 160, 220);
-        String txt = it.toString() + "\nTotal renta por " + dias + " día(s): " + total;
-        JOptionPane.showMessageDialog(ventana, txt, "Renta",
-                JOptionPane.INFORMATION_MESSAGE, icon);
+        JOptionPane.showMessageDialog(ventana,
+                "Total renta por " + dias + " día(s): " + total,
+                "Renta confirmada",
+                JOptionPane.INFORMATION_MESSAGE);
     }
+}
 
     private void ejecutarSubmenu() {
         String codigo = JOptionPane.showInputDialog(ventana, "Codigo del ítem:");
@@ -185,14 +280,30 @@ public class SistemaMain {
     }
 
     private String seleccionarImagen() {
-        JFileChooser ch = new JFileChooser();
-        int r = ch.showOpenDialog(ventana);
-        if (r == JFileChooser.APPROVE_OPTION) {
-            File f = ch.getSelectedFile();
-            if (f != null) return f.getAbsolutePath();
+    JFileChooser ch = new JFileChooser();
+
+    FileNameExtensionFilter filter = new FileNameExtensionFilter(
+            "Imágenes (JPG, PNG)", "jpg", "jpeg", "png");
+    ch.setFileFilter(filter);
+
+    int r = ch.showOpenDialog(ventana);
+    if (r == JFileChooser.APPROVE_OPTION) {
+        File f = ch.getSelectedFile();
+        if (f != null) {
+            String nombre = f.getName().toLowerCase();
+            if (nombre.endsWith(".jpg") || nombre.endsWith(".jpeg") || nombre.endsWith(".png")) {
+                return f.getAbsolutePath();
+            } else {
+                JOptionPane.showMessageDialog(ventana,
+                        "Tipo de archivo invalido, seleccione un JPG o PNG.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return null;
+            }
         }
-        return null;
     }
+    return null;
+}
 
     private ImageIcon cargarIcono(String ruta, int w, int h) {
         if (ruta == null || ruta.trim().isEmpty()) return new ImageIcon();
