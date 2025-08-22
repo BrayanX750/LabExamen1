@@ -141,62 +141,62 @@ public class SistemaMain {
     }
 
     private void rentarItem() {
-    String codigo = JOptionPane.showInputDialog(ventana, "Código del item:");
-    if (codigo == null || codigo.trim().isEmpty()) {
-        JOptionPane.showMessageDialog(ventana, "Código inválido.");
-        return;
-    }
-
-    RentItem it = buscarPorCodigo(codigo);
-    if (it == null) {
-        JOptionPane.showMessageDialog(ventana, "Item No Existe");
-        return;
-    }
-
-    
-    JPanel panel = new JPanel(new BorderLayout(10, 10));
-    
-    ImageIcon icon = cargarIcono(it.getImagen(), 120, 160);
-    JLabel lblImagen = new JLabel(icon);
-    panel.add(lblImagen, BorderLayout.WEST);
-
-    JTextArea info = new JTextArea(it.toString());
-    info.setEditable(false);
-    info.setOpaque(false);
-    panel.add(info, BorderLayout.CENTER);
-
-    JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-    inputPanel.add(new JLabel("Días de renta:"));
-    JTextField txtDias = new JTextField(5);
-    inputPanel.add(txtDias);
-    panel.add(inputPanel, BorderLayout.SOUTH);
-
-    int result = JOptionPane.showConfirmDialog(
-            ventana, panel, "Rentar Ítem", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-
-    if (result == JOptionPane.OK_OPTION) {
-        String d = txtDias.getText().trim();
-        if (d.isEmpty()) {
-            JOptionPane.showMessageDialog(ventana, "Debe ingresar los días de renta.");
+        String codigo = JOptionPane.showInputDialog(ventana, "Código del item:");
+        if (codigo == null || codigo.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(ventana, "Código inválido.");
             return;
         }
 
-        int dias;
-        try {
-            dias = Integer.parseInt(d);
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(ventana, "Ingrese un número válido.");
+        RentItem it = buscarPorCodigo(codigo);
+        if (it == null) {
+            JOptionPane.showMessageDialog(ventana, "Item No Existe");
             return;
         }
 
-        double total = it.pagoRenta(dias);
 
-        JOptionPane.showMessageDialog(ventana,
-                "Total renta por " + dias + " día(s): " + total,
-                "Renta confirmada",
-                JOptionPane.INFORMATION_MESSAGE);
+        JPanel panel = new JPanel(new BorderLayout(10, 10));
+
+        ImageIcon icon = cargarIcono(it.getImagen(), 120, 160);
+        JLabel lblImagen = new JLabel(icon);
+        panel.add(lblImagen, BorderLayout.WEST);
+
+        JTextArea info = new JTextArea(it.toString());
+        info.setEditable(false);
+        info.setOpaque(false);
+        panel.add(info, BorderLayout.CENTER);
+
+        JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        inputPanel.add(new JLabel("Días de renta:"));
+        JTextField txtDias = new JTextField(5);
+        inputPanel.add(txtDias);
+        panel.add(inputPanel, BorderLayout.SOUTH);
+
+        int result = JOptionPane.showConfirmDialog(
+                ventana, panel, "Rentar Ítem", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+        if (result == JOptionPane.OK_OPTION) {
+            String d = txtDias.getText().trim();
+            if (d.isEmpty()) {
+                JOptionPane.showMessageDialog(ventana, "Debe ingresar los días de renta.");
+                return;
+            }
+
+            int dias;
+            try {
+                dias = Integer.parseInt(d);
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(ventana, "Ingrese un número válido.");
+                return;
+            }
+
+            double total = it.pagoRenta(dias);
+
+            JOptionPane.showMessageDialog(ventana,
+                    "Total renta por " + dias + " día(s): " + total,
+                    "Renta confirmada",
+                    JOptionPane.INFORMATION_MESSAGE);
+        }
     }
-}
 
     private void ejecutarSubmenu() {
         String codigo = JOptionPane.showInputDialog(ventana, "Codigo del ítem:");
@@ -280,30 +280,30 @@ public class SistemaMain {
     }
 
     private String seleccionarImagen() {
-    JFileChooser ch = new JFileChooser();
+        JFileChooser ch = new JFileChooser();
 
-    FileNameExtensionFilter filter = new FileNameExtensionFilter(
-            "Imágenes (JPG, PNG)", "jpg", "jpeg", "png");
-    ch.setFileFilter(filter);
+        FileNameExtensionFilter filter = new FileNameExtensionFilter(
+                "Imágenes (JPG, PNG)", "jpg", "jpeg", "png");
+        ch.setFileFilter(filter);
 
-    int r = ch.showOpenDialog(ventana);
-    if (r == JFileChooser.APPROVE_OPTION) {
-        File f = ch.getSelectedFile();
-        if (f != null) {
-            String nombre = f.getName().toLowerCase();
-            if (nombre.endsWith(".jpg") || nombre.endsWith(".jpeg") || nombre.endsWith(".png")) {
-                return f.getAbsolutePath();
-            } else {
-                JOptionPane.showMessageDialog(ventana,
-                        "Tipo de archivo invalido, seleccione un JPG o PNG.",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
-                return null;
+        int r = ch.showOpenDialog(ventana);
+        if (r == JFileChooser.APPROVE_OPTION) {
+            File f = ch.getSelectedFile();
+            if (f != null) {
+                String nombre = f.getName().toLowerCase();
+                if (nombre.endsWith(".jpg") || nombre.endsWith(".jpeg") || nombre.endsWith(".png")) {
+                    return f.getAbsolutePath();
+                } else {
+                    JOptionPane.showMessageDialog(ventana,
+                            "Tipo de archivo invalido, seleccione un JPG o PNG.",
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                    return null;
+                }
             }
         }
+        return null;
     }
-    return null;
-}
 
     private ImageIcon cargarIcono(String ruta, int w, int h) {
         if (ruta == null || ruta.trim().isEmpty()) return new ImageIcon();
