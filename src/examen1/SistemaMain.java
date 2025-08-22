@@ -77,68 +77,68 @@ public class SistemaMain {
     }
 
     private void agregarItem() {
-    String[] opciones = {"Movie", "Game"};
-    String tipo = (String) JOptionPane.showInputDialog(
-            ventana, "¿Qué desea agregar?", "Agregar",
-            JOptionPane.QUESTION_MESSAGE, null, opciones, opciones[0]);
-    if (tipo == null) return;
+        String[] opciones = {"Movie", "Game"};
+        String tipo = (String) JOptionPane.showInputDialog(
+                ventana, "¿Qué desea agregar?", "Agregar",
+                JOptionPane.QUESTION_MESSAGE, null, opciones, opciones[0]);
+        if (tipo == null) return;
 
-    String codigo = null;
+        String codigo = null;
 
-    while (true) {
-        codigo = JOptionPane.showInputDialog(ventana, "Código:");
-        if (codigo == null) return;
-        codigo = codigo.trim();
-        if (codigo.isEmpty()) {
-            JOptionPane.showMessageDialog(ventana, "Código vacío. Intente otro.");
-            continue;
-        }
-        if (buscarPorCodigo(codigo) != null) {
-            JOptionPane.showMessageDialog(ventana, "Código repetido. Intente otro.");
-            continue;
-        }
-        break;
-    }
-
-    String nombre = JOptionPane.showInputDialog(ventana, "Nombre:");
-    if (nombre == null || nombre.trim().isEmpty()) return;
-
-    double precio = 0.0;
-    if (tipo.equals("Movie")) {
         while (true) {
-            String p = JOptionPane.showInputDialog(ventana, "Precio base por día:");
-            if (p == null) return;
-            p = p.trim();
-            if (p.isEmpty()) {
-                JOptionPane.showMessageDialog(ventana, "Precio vacío. Intente de nuevo.");
+            codigo = JOptionPane.showInputDialog(ventana, "Código:");
+            if (codigo == null) return;
+            codigo = codigo.trim();
+            if (codigo.isEmpty()) {
+                JOptionPane.showMessageDialog(ventana, "Código vacío. Intente otro.");
                 continue;
             }
-            try {
-                precio = Double.parseDouble(p);
-                break;
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(ventana, "Precio inválido. Ingrese un número.");
+            if (buscarPorCodigo(codigo) != null) {
+                JOptionPane.showMessageDialog(ventana, "Código repetido. Intente otro.");
+                continue;
             }
+            break;
         }
-    } else {
-        precio = 20.0;
-    }
 
-    String rutaImagen = seleccionarImagen();
-    if (rutaImagen == null) return;
+        String nombre = JOptionPane.showInputDialog(ventana, "Nombre:");
+        if (nombre == null || nombre.trim().isEmpty()) return;
 
-    if (tipo.equals("Movie")) {
-        Movie m = new Movie(codigo, nombre, precio, rutaImagen);
-        m.setImagen(rutaImagen);
-        items.add(m);
-        JOptionPane.showMessageDialog(ventana, "Movie guardada.");
-    } else {
-        Game g = new Game(codigo, nombre, precio, rutaImagen);
-        g.setImagen(rutaImagen);
-        items.add(g);
-        JOptionPane.showMessageDialog(ventana, "Game guardado.");
+        double precio = 0.0;
+        if (tipo.equals("Movie")) {
+            while (true) {
+                String p = JOptionPane.showInputDialog(ventana, "Precio base por día:");
+                if (p == null) return;
+                p = p.trim();
+                if (p.isEmpty()) {
+                    JOptionPane.showMessageDialog(ventana, "Precio vacío. Intente de nuevo.");
+                    continue;
+                }
+                try {
+                    precio = Double.parseDouble(p);
+                    break;
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(ventana, "Precio inválido. Ingrese un número.");
+                }
+            }
+        } else {
+            precio = 20.0;
+        }
+
+        String rutaImagen = seleccionarImagen();
+        if (rutaImagen == null) return;
+
+        if (tipo.equals("Movie")) {
+            Movie m = new Movie(codigo, nombre, precio, rutaImagen);
+            m.setImagen(rutaImagen);
+            items.add(m);
+            JOptionPane.showMessageDialog(ventana, "Movie guardada.");
+        } else {
+            Game g = new Game(codigo, nombre, precio, rutaImagen);
+            g.setImagen(rutaImagen);
+            items.add(g);
+            JOptionPane.showMessageDialog(ventana, "Game guardado.");
+        }
     }
-}
 
     private void rentarItem() {
     String codigo = JOptionPane.showInputDialog(ventana, "Código del item:");
