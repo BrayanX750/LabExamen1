@@ -6,6 +6,8 @@ package examen1;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import javax.swing.JOptionPane;
+
 
 /**
  *
@@ -49,12 +51,45 @@ public class Game extends RentItem implements MenuActions{
     
     @Override
     public void submenu(){
-        
+        String menu = """
+                SUBMENÚ
+                1. Actualizar fecha de publicación
+                2. Agregar especificación
+                3. Ver especificaciones
+                4. Salir
+                """;
+
+        int opcion;
+        do {
+            try {
+                opcion = Integer.parseInt(JOptionPane.showInputDialog(null, menu, "Submenú", JOptionPane.QUESTION_MESSAGE));
+                ejecutarOpcion(opcion);
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(null, "Ingrese un número válido.");
+                opcion = 0;
+            }
+        } while (opcion != 4);
     }
     
     @Override
     public void ejecutarOpcion(int opcion){
-        
+        switch (opcion) {
+            case 1 -> {
+                int anio = Integer.parseInt(JOptionPane.showInputDialog("Ingrese año:"));
+                int mes = Integer.parseInt(JOptionPane.showInputDialog("Ingrese mes (1-12):"));
+                int dia = Integer.parseInt(JOptionPane.showInputDialog("Ingrese día:"));
+                setFechaPublicacion(anio, mes, dia);
+                JOptionPane.showMessageDialog(null, "Fecha actualizada: " + fechaPub);
+            }
+            case 2 -> {
+                String espec = JOptionPane.showInputDialog("Ingrese especificación:");
+                specs.add(espec);
+                JOptionPane.showMessageDialog(null, "Especificación agregada.");
+            }
+            case 3 -> listEspecificaciones();
+            case 4 -> JOptionPane.showMessageDialog(null, "Saliendo del submenú...");
+            default -> JOptionPane.showMessageDialog(null, "Opción inválida.");
+        }
     }
 
 }

@@ -4,12 +4,14 @@
  */
 package examen1;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author Usuario
  */
 public class Examen1 {
-
+    ArrayList<RentItem> almacen=new ArrayList<>();  
     /**
      * @param args the command line arguments
      */
