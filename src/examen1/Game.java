@@ -26,7 +26,7 @@ public class Game extends RentItem implements MenuActions{
 
     @Override
     public String toString() {
-        return (super.toString() + "Fecha de publicacion: " + fechaPub + "- PS3 Game");
+        return (super.toString() + "\nFecha de publicacion: " + fechaPub + "- PS3 Game");
     }
 
     public void setFechaPublicacion(int year, int mes, int dia) {
